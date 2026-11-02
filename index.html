@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <!-- Настраивает отображение страницы на смартфонах и планшетах -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#14201c">
+
+    <!-- Название страницы во вкладке браузера -->
+    <title>Путешествия — 365 поводов поехать</title>
+
+    <!-- Подключает шрифт Manrope с Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* Общие цвета и радиус скругления карточек */
+        :root {
+            --ink: #17211d;
+            --muted: #68736d;
+            --paper: #f7f7f3;
+            --accent: #e5a85a;
+            --accent-dark: #bd7932;
+            --white: #fff;
+            --radius: 22px;
+        }
+
+        /* Учитывает внутренние отступы элементов в общей ширине и высоте */
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Делает переходы к разделам страницы плавными */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Основные настройки страницы: шрифт, цвет текста и фон */
+        body {
+            margin: 0;
+            color: var(--ink);
+            background: var(--paper);
+            font-family: "Manrope", sans-serif;
+        }
+
+        /* Убирает подчёркивание у ссылок и наследует цвет текста */
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* Наследует шрифт страницы для кнопок */
+        button {
+            font: inherit;
+        }
+
+        /* Размещает шапку поверх первого экрана */
+        .header {
+            position: absolute;
+            inset: 0 0 auto;
+            z-index: 5;
+            color: var(--white);
+        }
+
+        /* Ограничивает ширину шапки и распределяет логотип и меню по краям */
+        .header-inner {
+            width: min(1200px, calc(100% - 48px));
+            min-height: 86px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.24);
+        }
+
+        /* Оформляет название сайта в шапке */
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        /* Располагает кнопки навигации в одну строку */
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Оформляет все ссылки навигации как одинаковые кнопки с рамкой */
+        .nav a {
+            padding: 11px 17px;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 999px;
+            color: var(--white);
+            opacity: 0.9;
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                opacity 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        /* При наведении кнопка светлеет и слегка приподнимается */
+        .nav a:hover {
+            color: var(--ink);
+            background: var(--white);
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+
+        /* Показывает заметную рамку вокруг кнопки навигации при переходе клавишей Tab */
+        .nav a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 4px;
+        }
+
+        /* Первый экран: фоновая фотография, затемнение и главный текст */
+        .hero {
+            position: relative;
+            min-height: 680px;
+            height: min(820px, 92vh);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            color: var(--white);
+            background:
+                linear-gradient(90deg, rgba(12, 25, 21, 0.72), rgba(12, 25, 21, 0.18)),
+                linear-gradient(0deg, rgba(12, 25, 21, 0.45), transparent 55%),
+                url("https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=2000&q=85")
+                center / cover no-repeat;
+        }
+
+        /* Растягивает видео на весь первый экран, сохраняя его пропорции */
+        .hero-video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* Затемняет фон, чтобы текст на первом экране оставался читаемым */
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background:
+                linear-gradient(90deg, rgba(12, 25, 21, 0.72), rgba(12, 25, 21, 0.16)),
+                linear-gradient(0deg, rgba(12, 25, 21, 0.4), transparent 60%);
+            pointer-events: none;
+        }
+
+        /* Ограничивает ширину содержимого и размещает его поверх фонового видео */
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            width: min(1200px, calc(100% - 48px));
+            margin: 42px auto 0;
+        }
+
+        /* Оформляет небольшую вводную надпись над главным заголовком */
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 24px;
+            color: #f4d8b2;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Добавляет декоративную линию перед вводной надписью */
+        .eyebrow::before {
+            content: "";
+            width: 28px;
+            height: 1px;
+            background: currentColor;
+        }
+
+        /* Настраивает крупный заголовок первого экрана */
+        h1 {
+            max-width: 760px;
+            margin: 0;
+            font-size: clamp(48px, 7vw, 88px);
+            line-height: 0.99;
+            font-weight: 600;
+            letter-spacing: -5px;
+        }
+
+        /* Оформляет поясняющий текст под главным заголовком */
+        .hero-description {
+            max-width: 480px;
+            margin: 26px 0 34px;
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        /* Создаёт заметную кнопку перехода к разделу направлений */
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            min-height: 54px;
+            padding: 0 23px;
+            border: 0;
+            border-radius: 999px;
+            color: var(--ink);
+            background: var(--accent);
+            font-size: 13px;
+            font-weight: 800;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        /* Слегка приподнимает кнопку и меняет её цвет при наведении */
+        .button:hover {
+            transform: translateY(-2px);
+            background: #f0bc78;
+        }
+
+        /* Оформляет стрелку внутри основной кнопки */
+        .button-arrow {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        /* Размещает подпись в нижнем правом углу первого экрана */
+        .hero-note {
+            position: absolute;
+            right: max(24px, calc((100vw - 1200px) / 2));
+            bottom: 42px;
+            z-index: 2;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Создаёт вертикальные отступы вокруг основных разделов */
+        .section {
+            padding: 100px 24px;
+        }
+
+        /* Ограничивает ширину содержимого раздела направлений */
+        .section-inner {
+            width: min(1200px, 100%);
+            margin: 0 auto;
+        }
+
+        /* Располагает заголовок раздела и пояснение рядом */
+        .section-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 34px;
+        }
+
+        /* Оформляет небольшую подпись над заголовком раздела */
+        .section-kicker {
+            margin: 0 0 12px;
+            color: var(--accent-dark);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+
+        /* Настраивает заголовки разделов */
+        h2 {
+            margin: 0;
+            font-size: clamp(34px, 4vw, 52px);
+            line-height: 1.08;
+            font-weight: 600;
+            letter-spacing: -2px;
+        }
+
+        /* Ограничивает ширину описания рядом с заголовком */
+        .section-intro {
+            max-width: 350px;
+            margin: 0 0 4px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        /* Раскладывает карточки направлений в четыре колонки на широких экранах */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        /* Создаёт карточку направления с фотографией и текстом поверх неё */
+        .card {
+            position: relative;
+            min-height: 300px;
+            overflow: hidden;
+            border-radius: var(--radius);
+            isolation: isolate;
+            color: var(--white);
+            background: #53665e;
+        }
+
+        /* Растягивает фотографию на всю карточку */
+        .card img {
+            position: absolute;
+            inset: 0;
+            z-index: -2;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        /* Затемняет нижнюю часть карточки для читаемости текста */
+        .card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: linear-gradient(180deg, transparent 32%, rgba(9, 20, 16, 0.78));
+        }
+
+        /* Увеличивает изображение карточки при наведении */
+        .card:hover img {
+            transform: scale(1.06);
+        }
+
+        /* Закрепляет подписи в нижней части карточки */
+        .card-content {
+            position: absolute;
+            inset: auto 20px 20px;
+        }
+
+        /* Оформляет категорию направления над его названием */
+        .card-type {
+            display: inline-block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.78);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+        }
+
+        /* Настраивает заголовки карточек */
+        .card h3 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* Оформляет текст-ссылку внутри карточки */
+        .card-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 9px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Отделяет блок «О нас» от карточек и подвала */
+        .about {
+            padding: 0 24px 100px;
+        }
+
+        /* Оформляет подложку, текст и статистику блока «О нас» */
+        .about-inner {
+            width: min(1200px, 100%);
+            margin: 0 auto;
+            padding: 44px 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+            border-radius: var(--radius);
+            background: #e9eee8;
+        }
+
+        /* Делает описание в блоке «О нас» удобным для чтения */
+        .about-inner p {
+            max-width: 570px;
+            margin: 14px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        /* Выравнивает цифру и подпись в блоке статистики */
+        .about-stat {
+            min-width: 160px;
+            text-align: center;
+        }
+
+        /* Выделяет число 365 в блоке статистики */
+        .about-stat strong {
+            display: block;
+            color: var(--accent-dark);
+            font-size: 42px;
+            line-height: 1;
+        }
+
+        /* Оформляет подпись под числом 365 */
+        .about-stat span {
+            display: block;
+            margin-top: 9px;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Оформляет подвал сайта */
+        footer {
+            padding: 28px 24px;
+            color: rgba(255, 255, 255, 0.72);
+            background: #17211d;
+        }
+
+        /* Располагает авторство и контакты в строку */
+        .footer-inner {
+            width: min(1200px, 100%);
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            font-size: 12px;
+        }
+
+        /* Делает ссылку в подвале светлой для контраста */
+        .footer-inner a {
+            color: var(--white);
+        }
+
+        /* На планшетах показывает карточки в две колонки */
+        @media (max-width: 900px) {
+            .cards {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .card {
+                min-height: 280px;
+            }
+
+            .section {
+                padding: 76px 24px;
+            }
+        }
+
+        /* На телефонах меняет размеры шапки, заголовков и карточек */
+        @media (max-width: 600px) {
+            .header-inner {
+                width: calc(100% - 36px);
+                min-height: 72px;
+            }
+
+            /* Уменьшает расстояние и размер кнопок навигации на телефоне */
+            .nav {
+                gap: 6px;
+                font-size: 10px;
+            }
+
+            .nav a {
+                padding: 9px 10px;
+            }
+
+            .hero {
+                min-height: 650px;
+                height: 88svh;
+            }
+
+            .hero-content {
+                width: calc(100% - 40px);
+                margin-top: 38px;
+            }
+
+            h1 {
+                font-size: clamp(48px, 14vw, 68px);
+                letter-spacing: -3px;
+            }
+
+            .hero-description {
+                max-width: 360px;
+                font-size: 14px;
+            }
+
+            .hero-note {
+                right: 20px;
+                bottom: 22px;
+                font-size: 9px;
+            }
+
+            .section {
+                padding: 64px 20px;
+            }
+
+            /* Ставит заголовок и пояснение друг под другом */
+            .section-heading {
+                align-items: flex-start;
+                flex-direction: column;
+                margin-bottom: 26px;
+            }
+
+            .section-intro {
+                font-size: 13px;
+            }
+
+            /* Показывает по одной карточке в строке на узком экране */
+            .cards {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .card {
+                min-height: 290px;
+            }
+
+            .about {
+                padding: 0 20px 64px;
+            }
+
+            /* Ставит текст и статистику блока «О нас» друг под другом */
+            .about-inner {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 30px 24px;
+            }
+
+            .about-stat {
+                text-align: left;
+            }
+
+            /* Располагает строки подвала друг под другом */
+            .footer-inner {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+
+        /* На очень узких экранах размещает логотип над кнопками меню */
+        @media (max-width: 380px) {
+            .header-inner {
+                flex-direction: column;
+                justify-content: center;
+                gap: 10px;
+                padding: 12px 0;
+            }
+
+            .nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* Уменьшает анимации для пользователей, предпочитающих меньше движения */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Шапка сайта: название и ссылки для перехода по странице -->
+    <header class="header">
+        <div class="header-inner">
+            <!-- Название сайта без кружка со стрелкой -->
+            <a class="logo" href="#" aria-label="Путешествия — на главную">
+                <span>Путешествия</span>
+            </a>
+
+            <!-- Основное меню: у всех пунктов одинаковые рамки и эффект наведения -->
+            <nav class="nav" aria-label="Основная навигация">
+                <a href="#destinations">Направления</a>
+                <a href="#about">О нас</a>
+                <a href="https://t.me/tw1styqq">Связаться</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Первый экран с фоновым видео, заголовком и кнопкой -->
+        <section class="hero" aria-label="Путешествия по России">
+            <!-- Видео загружается из файла водопад.webm рядом с index.html -->
+            <video class="hero-video" autoplay loop muted playsinline>
+                <source src="водопад.webm" type="video/webm">
+            </video>
+
+            <!-- Главный текст первого экрана -->
+            <div class="hero-content">
+                <div class="eyebrow">Путешествия, которые остаются с вами</div>
+                <h1>Открывай<br>мир заново</h1>
+                <p class="hero-description">
+                    Вдохновляющие маршруты, красивые места и впечатления,
+                    ради которых хочется собирать чемодан.
+                </p>
+                <a class="button" href="#destinations">
+                    Выбрать направление
+                    <span class="button-arrow">↘</span>
+                </a>
+            </div>
+
+            <!-- Подпись в нижнем углу первого экрана -->
+            <div class="hero-note">Путешествуй в своём ритме</div>
+        </section>
+
+        <!-- Раздел с карточками туристических направлений -->
+        <section class="section" id="destinations">
+            <div class="section-inner">
+                <!-- Заголовок и пояснение раздела -->
+                <div class="section-heading">
+                    <div>
+                        <p class="section-kicker">Найди своё место</p>
+                        <h2>Куда отправимся?</h2>
+                    </div>
+                    <p class="section-intro">
+                        От горных пейзажей до тихих берегов — выбери направление
+                        для следующего приключения.
+                    </p>
+                </div>
+
+                <!-- Карточки направлений: фотография, категория, название и ссылка -->
+                <div class="cards">
+                    <a class="card" href="#contact">
+                        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=85" alt="Горный пейзаж">
+                        <div class="card-content">
+                            <span class="card-type">Горы и природа</span>
+                            <h3>Алтай</h3>
+                            <span class="card-link">Смотреть направление ↗</span>
+                        </div>
+                    </a>
+
+                    <a class="card" href="#contact">
+                        <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=900&q=85" alt="Озеро среди гор">
+                        <div class="card-content">
+                            <span class="card-type">Озёра и простор</span>
+                            <h3>Байкал</h3>
+                            <span class="card-link">Смотреть направление ↗</span>
+                        </div>
+                    </a>
+
+                    <a class="card" href="#contact">
+                        <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=900&q=85" alt="Морское побережье">
+                        <div class="card-content">
+                            <span class="card-type">Море и побережье</span>
+                            <h3>Камчатка</h3>
+                            <span class="card-link">Смотреть направление ↗</span>
+                        </div>
+                    </a>
+
+                    <a class="card" href="#contact">
+                        <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=900&q=85" alt="Пейзаж с озером и горами">
+                        <div class="card-content">
+                            <span class="card-type">Лесные маршруты</span>
+                            <h3>Карелия</h3>
+                            <span class="card-link">Смотреть направление ↗</span>
+                        </div>
+                    </a>
+
+                    <a class="card" href="#contact">
+                        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=85" alt="Песчаный пляж и море">
+                        <div class="card-content">
+                            <span class="card-type">Море и солнце</span>
+                            <h3>Сочи</h3>
+                            <span class="card-link">Смотреть направление ↗</span>
+                        </div>
+                    </a>
+
+                    <a class="card" href="#contact">
+                        <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=900&q=85" alt="Горы под звёздным небом">
+                        <div class="card-content">
+                            <span class="card-type">Горные маршруты</span>
+                            <h3>Кавказ</h3>
+                            <span class="card-link">Смотреть направление ↗</span>
+                        </div>
+                    </a>
+
+                    <a class="card" href="#contact">
+                        <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=85" alt="Природный пейзаж">
+                        <div class="card-content">
+                            <span class="card-type">Природа и отдых</span>
+                            <h3>Крым</h3>
+                            <span class="card-link">Смотреть направление ↗</span>
+                        </div>
+                    </a>
+
+                    <a class="card" href="#contact">
+                        <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=900&q=85" alt="Цветы и летний пейзаж">
+                        <div class="card-content">
+                            <span class="card-type">Городские выходные</span>
+                            <h3>Казань</h3>
+                            <span class="card-link">Смотреть направление ↗</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Информационный блок о сайте и его тематике -->
+        <section class="about" id="about">
+            <div class="about-inner">
+                <div>
+                    <p class="section-kicker">Путешествия начинаются с идеи</p>
+                    <h2>Больше впечатлений.<br>Меньше суеты.</h2>
+                    <p>
+                        Этот сайт — место для вдохновения и планирования новых поездок.
+                        Выбирай направление, сохраняй идеи и отправляйся навстречу приключениям.
+                    </p>
+                </div>
+
+                <!-- Статистика: 365 поводов поехать — по одному на каждый день года -->
+                <div class="about-stat">
+                    <strong>365</strong>
+                    <span>Поводов поехать</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Подвал с авторством и контактной ссылкой -->
+    <footer id="contact">
+        <div class="footer-inner">
+            <span>© 2026 Василенко Степан</span>
+            <span>Web Developer</span>
+            <a href="https://t.me/tw1styqq">Telegram: @tw1styqq</a>
+        </div>
+    </footer>
+</body>
+</html>
